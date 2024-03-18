@@ -15,23 +15,14 @@ const {
   getCategory,
   updateCategory,
   deleteCategory,
-} = require(`../services/categoryService`);
-// const protect_allowedTo = require("../services/authServises/protect&allowedTo");
-// const subCategoriesRoute = require("./subCategoryRoute");
+} = require("../services/categoryService");
 
 const router = express.Router();
-
-// router.use(
-//     "/:categoryId/subcategories",
-//     subCategoriesRoute
-//   );
 
 router.route("/")
   .get(
     getCategories
   ).post(
-    // protect_allowedTo.protect(),
-    // protect_allowedTo.allowedTo("admin", "manager"),
     uploadCategoryImage,
     createCategoryValidator,
     resizeImage,
@@ -45,15 +36,11 @@ router
     getCategoryValidator,
     getCategory
   ).put(
-    // protect_allowedTo.protect(),
-    // protect_allowedTo.allowedTo("admin", "manager"),
     uploadCategoryImage,
     updateCategoryValidator,
     resizeImage,
     updateCategory
   ).delete(
-    // protect_allowedTo.protect(),
-    // protect_allowedTo.allowedTo("admin"),
     deleteCategoryValidator,
     deleteCategory
   );
