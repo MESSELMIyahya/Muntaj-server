@@ -32,20 +32,10 @@ class ApiFeatures {
     return this;
   }
   
-  limitFields(mudelName) {
+  limitFields() {
     if (this.reqQuery.fields) {
       const fields = this.reqQuery.fields.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.select(fields);
-    } else if (mudelName === `User`) {
-      this.mongooseQuery = this.mongooseQuery.select(`
-        -emailVerifyCode
-        -emailVerifyCodeExpires
-        -password
-        -passwordChangedAt
-        -passwordResetCode
-        -passwordResetExpires
-        -passwordResetVerified
-      `);
     } else {
       this.mongooseQuery = this.mongooseQuery.select("-__v");
     }
