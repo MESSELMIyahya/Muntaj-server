@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 
 const dbConection = () => {
-  mongoose.connect(process.env.DB_URI).then((conn) => {
+  const dbName = process.env.DB_NAME || 'hakathonDB';
+  
+  mongoose.connect(process.env.DB_URI,{dbName}).then((conn) => {
     console.log(`database connected ${conn.connection.host}`);
   })
 };
