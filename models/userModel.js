@@ -58,7 +58,7 @@ const userSchema = new mongoose.Schema(
       oauth: { required: true, type: Boolean },
       password: {
         type: String,
-        required: [true, "Password is required."],
+        required:false,
         minlength: [8, "Password should be at least 8 characters long."],
       },
       provider: {
