@@ -25,6 +25,13 @@ const userSchema = new mongoose.Schema(
       minlength: [2, "Too short last name."],
       maxlength: [16, "Too long last name."],
     },
+    username: {
+      type: String,
+      required: [true, "Username is required."],
+      trim: true,
+      minlength: [4, "Too short Username name."],
+      maxlength: [10, "Too long Username name."],
+    },
     slug: {
       type: String,
       required: [true, "Slug is required."],
@@ -36,11 +43,6 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       match: [/^\S+@\S+\.\S+$/, "Please provide a valid email address."],
-    },
-    phone: {
-      type: String,
-      required: [true, "Phone number is required."],
-      trim: true,
     },
     profileImage: {
       type: String,
