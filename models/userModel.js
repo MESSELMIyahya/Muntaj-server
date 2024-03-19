@@ -66,6 +66,10 @@ const userSchema = new mongoose.Schema(
         type: String,
         enum: ['google', 'email']
       }
+    },
+    store:{
+      required:false,
+      type:mongoose.Schema.ObjectId
     }
   },
   { timestamps: true }
@@ -150,15 +154,17 @@ const setImageUrl = async (doc) => {
 
 };
 
-// findOne, findAll, update, delete
-userSchema.post("init", async (doc) => {
-  await setImageUrl(doc);
-});
+// // findOne, findAll, update, delete
+// userSchema.post("init", async (doc) => {
+//   await setImageUrl(doc);
+// });
 
-// create
-userSchema.post("save", async (doc) => {
-  await setImageUrl(doc);
-});
+// // create
+// userSchema.post("save", async (doc) => {
+//   await setImageUrl(doc);
+// });
+
+
 
 const UserModel = mongoose.models.Users || mongoose.model('Users', userSchema);
 module.exports = UserModel;
