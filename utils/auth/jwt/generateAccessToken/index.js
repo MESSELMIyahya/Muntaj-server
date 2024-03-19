@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+const jwt = require('jsonwebtoken');
 
 
 const expiresIn = process.env.ACCESS_TOKEN_EXPiRES || '5m'

@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken'
+const jwt = require('jsonwebtoken');
 
 
 const expiresIn = process.env.REFRESH_TOKEN_EXPiRES || '30m'
