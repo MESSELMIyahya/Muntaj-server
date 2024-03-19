@@ -22,7 +22,7 @@ const AuthLoginController = async(req,res,next) => {
             'Invalid body data',
             errorObject(
                 undefined,
-                'Invalid body data',
+                err.message,
                 undefined,
                 "function"
             ),
@@ -72,7 +72,7 @@ const AuthLoginController = async(req,res,next) => {
             id:user._id,
             role:user.role,
             username:user.username,
-            pic:user.profileImage
+            pic:user.profileImage || ''
         }
 
         // jwt auth 
