@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { GetObjectCommand } = require("@aws-sdk/client-s3");
 const s3Client = require('../config/s3Client');
+const bpt = require('bcrypt');
+const ApiError = require("../utils/apiError");
+const errorObject = require("../utils/errorObject");
 
 const awsBuckName = process.env.AWS_BUCKET_NAME;
 const expiresIn = process.env.EXPIRE_IN;
@@ -43,50 +46,102 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    profileCoverImage: {
-      type: String,
-      trim: true,
-    },
-    password: {
-      type: String,
-      required: [true, "Password is required."],
-      minlength: [8, "Password should be at least 8 characters long."],
-    },
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    // auth 
+    auth: {
+      oauth: { required: true, type: Boolean },
+      password: {
+        type: String,
+        required: [true, "Password is required."],
+        minlength: [8, "Password should be at least 8 characters long."],
+      },
+      provider: {
+        required: true,
+        type: String,
+        enum: ['google', 'enum']
+      }
     }
   },
   { timestamps: true }
 );
 
+// Hashing password middleware 
+userSchema.pre('save', async function () {
+  if (this.auth.oauth || !this.auth.password) return;
+  this.auth.password = await bpt.hash(this.auth.password, 10);
+});
+
+
+// statics
+userSchema.static('doesEmailExists', async function (email) {
+  try {
+    const user = await this.findOne({ email });
+    return user ? true : false
+  } catch (err) {
+    throw new ApiError(
+      'does Email Exists function',
+      errorObject(
+        undefined,
+        'does Email Exists function',
+        undefined,
+        "method"
+      ),
+      500
+    )
+  }
+})
+
+// methods 
+userSchema.method("isValidPassword", async function (pass) {
+  try {
+    const isValid = await bpt.compare(pass, this.auth.password)
+    return isValid;
+  } catch (err) {
+    throw new ApiError(
+      'isValidPassword function',
+      errorObject(
+        undefined,
+        'isValidPassword function',
+        undefined,
+        "method"
+      ),
+      500
+    )
+  }
+});
+
+
+
 const setImageUrl = async (doc) => {
 
   if (doc.profileImage) {
-  
+
     const getObjectParams = {
       Bucket: awsBuckName,
       Key: `users/${doc.profileImage}`,
     };
-  
+
     const command = new GetObjectCommand(getObjectParams);
     const imageUrl = await getSignedUrl(s3Client, command, { expiresIn });
-  
+
     doc.profileImage = imageUrl;
-    
+
   };
 
   if (doc.profileCoverImage) {
-  
+
     const getObjectParams = {
       Bucket: awsBuckName,
       Key: `users/${doc.profileCoverImage}`,
     };
-  
+
     const command = new GetObjectCommand(getObjectParams);
     const imageUrl = await getSignedUrl(s3Client, command, { expiresIn });
-  
+
     doc.profileCoverImage = imageUrl;
 
   };
@@ -103,4 +158,5 @@ userSchema.post("save", async (doc) => {
   await setImageUrl(doc);
 });
 
-module.exports = mongoose.model("User", userSchema);
+const UserModel = mongoose.models.Users || mongoose.model('Users', userSchema);
+module.exports = UserModel;
