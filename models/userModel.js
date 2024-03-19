@@ -64,7 +64,7 @@ const userSchema = new mongoose.Schema(
       provider: {
         required: true,
         type: String,
-        enum: ['google', 'enum']
+        enum: ['google', 'email']
       }
     }
   },
