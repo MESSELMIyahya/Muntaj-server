@@ -19,7 +19,7 @@ function PassportGoogleStrategyConfig() {
         const userData = {
             lastName: profile._json.family_name,
             firstName: profile._json.given_name,
-            username: profile._json.name || `${profile.name.givenName} ${profile.name.familyName}`,
+            userName: profile._json.name || `${profile.name.givenName} ${profile.name.familyName}`,
             slug:'user',
             profileImage: profile.photos[0].value,
             email: profile?._json?.email || profile?.emails[0].value,
@@ -43,7 +43,7 @@ function PassportGoogleStrategyConfig() {
                 id: profile._json.sub,
                 role: 'user',
                 pic: userData.profileImage,
-                username: userData.username
+                userName: userData.userName
             }
 
             // if user existed 
