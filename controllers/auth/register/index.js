@@ -8,7 +8,7 @@ const bodySchema = z.object({
     firstName: z.string().min(3, 'firstName must be more then 2 characters'),
     email: z.string().email("Email isn't valid"),
     password: z.string().min(8, 'Password must be more then 8 characters'),
-    username: z.string().min(5, 'username must be more then 4 characters')
+    userName: z.string().min(5, 'userName must be more then 4 characters')
 })
 
 
@@ -35,7 +35,7 @@ const AuthRegisterController = async (req, res, next) => {
     try {
 
         // if the data is valid 
-        const { username, email, firstName,lastName, password } = bodyData
+        const { userName, email, firstName,lastName, password } = bodyData
 
         // see if this email is existed
         const existedEmail = await UserModel.doesEmailExists(email);
@@ -57,7 +57,7 @@ const AuthRegisterController = async (req, res, next) => {
         const userData = {
             lastName,
             firstName,
-            username,
+            userName,
             slug: 'user',
             email,
             role: 'user',
