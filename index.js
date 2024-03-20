@@ -24,7 +24,7 @@ dbConection();
 const app = express();
 
 // setup cors and cookie parser 
-app.use(cors({credentials:true}));
+app.use(cors({credentials:true,origin: true,methods:["POST","DELETE","GET","PUT"]}));
 app.use(cookieParser())
 
 
