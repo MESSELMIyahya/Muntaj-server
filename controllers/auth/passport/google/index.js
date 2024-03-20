@@ -55,7 +55,7 @@ const OAuthGoogleLoginController = async (req, res, next) => {
         res.cookie('re_to', refreshToken, { httpOnly: true, maxAge: re_to_age });
 
         // send tokens 
-        return res.redirect(process.env.SERVER_URL);
+        return res.redirect(process.env.CLIENT_URL);
     } catch (err) {
         return next(new ApiError(
             'OAuth Google Error Controller',
