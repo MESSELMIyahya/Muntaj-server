@@ -4,11 +4,12 @@ const AuthLoginController = require("../../controllers/auth/login/index");
 const OAuthRouter = require("./passport/index");
 const AuthLogoutController = require("../../controllers/auth/logout/index");
 const AuthIsAuthenticatedController = require("../../controllers/auth/IsAuthenticated/index");
+const AuthVerifierMiddleware = require('../../middlewares/auth/index');
 
 const app = Router();
 
 // is authenticated route
-app.get("/is-authenticated", AuthIsAuthenticatedController);
+app.get("/is-authenticated",AuthVerifierMiddleware, AuthIsAuthenticatedController);
 
 // register route
 app.post("/register", AuthRegisterController);
