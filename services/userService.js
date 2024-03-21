@@ -20,7 +20,7 @@ exports.resizeImage = asyncHandler(async (req, _, next) => {
     const imageFormat = "png";
 
     const buffer = await sharp(req.file.buffer)
-      // .resize(800, 800)
+      .resize(800, 800)
       .toFormat(imageFormat)
       .jpeg({ quality: 100 })
       .toBuffer();
