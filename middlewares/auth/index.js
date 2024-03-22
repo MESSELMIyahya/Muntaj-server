@@ -1,6 +1,7 @@
-const { verifyAccessToken } = require('../../utils/auth/jwt/index')
+const { verifyAccessToken, verifyRefreshToken, generateAccessToken } = require('../../utils/auth/jwt/index')
 const ApiError = require('../../utils/apiError');
 const errorObject = require('../../utils/errorObject');
+const ms = require('ms')
 
 const AuthVerifierMiddleware = async (req, res, next) => {
     // verify if cookies exist 
@@ -21,13 +22,44 @@ const AuthVerifierMiddleware = async (req, res, next) => {
 
     try {
         // verify access token 
-        const payload = await verifyAccessToken(cos?.ac_to);
-        // if the token isn't valid  it'll throw an error "JWT-EXPIRED"
+        let payload = null
 
-        // ser the user in req 
+        try {
+            payload = await verifyAccessToken(cos?.ac_to);
+        } catch (err) {
+            if (err.error.msg == 'jwt expired') {
+
+                // if the access token is expired we generate new access token from the refresh token
+                const refreshPayload = await verifyRefreshToken(cos?.re_to);
+
+                const JWTBody = {
+                    email: refreshPayload.email,
+                    id: refreshPayload.id,
+                    role: refreshPayload.role,
+                    username: refreshPayload.username,
+                    pic: refreshPayload.pic
+                }
+
+                const new_access_token = generateAccessToken(JWTBody);
+
+                const ac_to_age = ms(process.env.REFRESH_TOKEN_EXPiRES || '60m');
+
+                // saving Access Token and Refresh Token as HTTPOnly cookie
+                res.cookie('ac_to', new_access_token, { httpOnly: true, maxAge: ac_to_age });
+
+                // setting the user data
+                payload = refreshPayload ;
+
+            } else {
+                throw new Error('Unauthenticated');
+            }
+        }
+
+        // set the user in req 
         req.user = payload;
         return next();
     } catch (err) {
+        console.log(err)
         return next(new ApiError(
             'Unauthenticated',
             errorObject(
@@ -41,4 +73,4 @@ const AuthVerifierMiddleware = async (req, res, next) => {
     }
 }
 
-module.exports =  AuthVerifierMiddleware;
+module.exports = AuthVerifierMiddleware;

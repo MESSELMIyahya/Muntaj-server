@@ -80,8 +80,8 @@ const AuthLoginController = async(req,res,next) => {
         const refreshToken = generateRefreshToken(JWTBody);
 
         // cookies ages
-        const ac_to_age = ms(process.env.ACCESS_TOKEN_EXPiRES || '5m');
-        const re_to_age = ms(process.env.REFRESH_TOKEN_EXPiRES || '30m')
+        const ac_to_age = ms(process.env.REFRESH_TOKEN_EXPiRES || '60m');
+        const re_to_age = ms(process.env.REFRESH_TOKEN_EXPiRES || '60m')
 
         // saving Access Token and Refresh Token as HTTPOnly cookie
         res.cookie('ac_to',accessToken,{httpOnly:true ,maxAge:ac_to_age});
