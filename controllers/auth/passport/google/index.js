@@ -38,7 +38,7 @@ const OAuthGoogleLoginController = async (req, res, next) => {
             email: user.email,
             id: user._id,
             role: 'user',
-            username: user.username,
+            username: user.userName,
             pic: user.profileImage
         }
 
