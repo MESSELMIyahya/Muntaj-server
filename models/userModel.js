@@ -114,28 +114,18 @@ userSchema.method("isValidPassword", async function (pass) {
 
 const setImageUrl = async (doc) => {
   if (doc.profileImage) {
-    const getObjectParams = {
-      Bucket: awsBuckName,
-      Key: `users/${doc.profileImage}`,
-    };
-
-    const command = new GetObjectCommand(getObjectParams);
-    const imageUrl = await getSignedUrl(s3Client, command, { expiresIn });
-
-    doc.profileImage = imageUrl;
-  }
-
-  if (doc.profileCoverImage) {
-    const getObjectParams = {
-      Bucket: awsBuckName,
-      Key: `users/${doc.profileCoverImage}`,
-    };
-
-    const command = new GetObjectCommand(getObjectParams);
-    const imageUrl = await getSignedUrl(s3Client, command, { expiresIn });
-
-    doc.profileCoverImage = imageUrl;
-  }
+    if (!`${doc.profileImage}`.startsWith('http')) {
+      const getObjectParams = {
+        Bucket: awsBuckName,
+        Key: `users/${doc.profileImage}`,
+      };
+  
+      const command = new GetObjectCommand(getObjectParams);
+      const imageUrl = await getSignedUrl(s3Client, command, { expiresIn });
+  
+      doc.profileImage = imageUrl;
+    }
+  };
 };
 
 // findOne, findAll, update, delete
@@ -148,5 +138,5 @@ userSchema.post("save", async (doc) => {
   await setImageUrl(doc);
 });
 
-const UserModel = mongoose.models.Users || mongoose.model("Users", userSchema);
+const UserModel = mongoose.models.Users || mongoose.model("User", userSchema);
 module.exports = UserModel;

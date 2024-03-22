@@ -5,11 +5,8 @@ const errorObject = require("../utils/errorObject");
 
 const fileFilter = (_, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
-
     cb(null, true);
-
   } else {
-
     const message = `Only image files are allowed.`;
     cb(
       new ApiError(
@@ -19,8 +16,7 @@ const fileFilter = (_, file, cb) => {
       ),
       false
     );
-
-  };
+  }
 };
 
 const upload = multer({
@@ -29,3 +25,5 @@ const upload = multer({
 });
 
 exports.uploadSingleImage = (fieldName) => upload.single(fieldName);
+
+exports.uploadMultipleImages = (arrayOfFields) => upload.fields(arrayOfFields);
