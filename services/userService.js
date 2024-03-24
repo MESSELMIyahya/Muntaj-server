@@ -5,21 +5,21 @@ const { PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 const { 
   createOne,
+  getAll,
 } = require("./handlersFactory");
 const s3Client = require("../config/s3Client");
 const { uploadSingleImage, uploadMultipleImages } = require("../middlewares/uploadImageMiddleware");
 const userModel = require("../models/userModel");
 const storeModel = require("../models/storeModel");
+const productModel = require("../models/productModel");
 const ApiError = require("../utils/apiError");
 const errorObject = require("../utils/errorObject");
 
 const awsBuckName = process.env.AWS_BUCKET_NAME;
 
-// Upload single image
-exports.uploadImage = uploadSingleImage("profileImage");
+exports.uploadUserImage = uploadSingleImage("profileImage");
 
-// Image processing
-exports.resizeImage = asyncHandler(async (req, _, next) => {
+exports.resizeUserImage = asyncHandler(async (req, _, next) => {
   if (req.file) {
     const imageFormat = "png";
 
@@ -59,7 +59,7 @@ exports.userGetMyData = asyncHandler(async (req, res, next) => {
   if (!document) {
     const message = `No user for this ID ${id}.`;
     throw next(
-      new ApiError(message, errorObject(id, message, "id", "params"), 404)
+      new ApiError(message, errorObject(id, message, undefined, undefined), 404)
     );
   }
 
@@ -90,7 +90,7 @@ exports.userUpdateMyData = asyncHandler(async (req, res, next) => {
     if (!document) {
       const message = `No user for this ID ${id}.`;
       throw next(
-        new ApiError(message, errorObject(id, message, "id", "params"), 404)
+        new ApiError(message, errorObject(id, message, undefined, undefined), 404)
       );
     };
 
@@ -123,7 +123,7 @@ exports.userUpdateMyData = asyncHandler(async (req, res, next) => {
     if (!document) {
       const message = `No user for this ID ${id}.`;
       throw next(
-        new ApiError(message, errorObject(id, message, "id", "params"), 404)
+        new ApiError(message, errorObject(id, message, undefined, undefined), 404)
       );
     };
 
@@ -131,8 +131,12 @@ exports.userUpdateMyData = asyncHandler(async (req, res, next) => {
   };
 });
 
-// Upload Multiple Images
-exports.uploadImages = uploadMultipleImages([
+
+
+
+
+
+exports.uploadStoreImages = uploadMultipleImages([
   {
     name: "storeImage",
     maxCount: 1,
@@ -143,8 +147,7 @@ exports.uploadImages = uploadMultipleImages([
   },
 ]);
 
-// Images processing
-exports.resizImages = asyncHandler(async (req, _, next) => {
+exports.resizStoreImages = asyncHandler(async (req, _, next) => {
 
   if (req.files.storeImage) {
 
@@ -361,5 +364,300 @@ exports.userDeleteMyeStore = asyncHandler(async (req, res, next) => {
   };
 
   res.status(200).json({ data: document });
+
+});
+
+
+
+
+
+
+exports.uploadProductImagesAndVideo = uploadMultipleImages([
+  {
+    name: "primaryImage",
+    maxCount: 1,
+  },
+  {
+    name: "images",
+    maxCount: 6,
+  },
+  {
+    name: "video",
+    maxCount: 1,
+  },
+]);
+
+exports.resizeProductImagesAndVideo = asyncHandler(async (req, res, next) => {
+
+  if (req.files.primaryImage) {
+
+    if (!`${req.files.primaryImage[0].mimetype}`.startsWith('image')) {
+      const message = `Primary image must be of type image.`;
+      throw next(
+        new ApiError(message, errorObject(undefined, message, 'primaryImage', 'body'), 400)
+      );
+    };
+
+    const imageFormat = 'jpg';
+
+    const buffer = await sharp(req.files.primaryImage[0].buffer)
+    .resize(960, 1312)
+    .toFormat(imageFormat)
+    .jpeg({ quality: 100 })
+    .toBuffer();
+
+    const fileName = `product-image-${uuidv4()}-${Date.now()}.${imageFormat}`;
+
+    const params = {
+      Bucket: awsBuckName,
+      Key: `products/${fileName}`,
+      Body: buffer,
+      ContentType: `image/${imageFormat}`,
+    };
+
+    const command = new PutObjectCommand(params);
+    await s3Client.send(command);
+
+    req.body.primaryImage = fileName;
+
+  };
+
+  if (req.files.images) {
+
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < req.files.images.length; i++) {
+      if (!`${req.files.images[i].mimetype}`.startsWith('image')) {
+        const message = `Images must be of type image.`;
+        throw next(
+          new ApiError(message, errorObject(undefined, message, 'images', 'body'), 400)
+        );
+      };
+    };
+
+    req.body.images = [];
+
+    await Promise.all(
+
+      req.files.images.map(async (img, index) => {
+
+        const imageFormat = 'jpeg';
+
+        const buffer = await sharp(img.buffer)
+        .resize(960, 1312)
+        .toFormat(imageFormat)
+        .jpeg({ quality: 100 })
+        .toBuffer();
+
+        const imageName = `product-image-${uuidv4()}-${Date.now()}-${index + 1}.${imageFormat}`;
+    
+        const params = {
+          Bucket: awsBuckName,
+          Key: `products/${imageName}`,
+          Body: buffer,
+          ContentType: `image/${imageFormat}`,
+        };
+    
+        const command = new PutObjectCommand(params);
+        await s3Client.send(command);
+    
+        // Save image name to Into Your db
+        req.body.images.push(`${imageName}`);
+
+      })
+
+    );
+
+  };
+
+  if (req.files.video) {
+
+    if (!`${req.files.video[0].mimetype}`.startsWith('video')) {
+      const message = `Video must be of type video.`;
+      throw next(
+        new ApiError(message, errorObject(undefined, message, 'video', 'body'), 400)
+      );
+    };
+
+    const {mimetype} = req.files.video[0];
+
+    const imageFormat = `${mimetype}`.slice(`${mimetype}`.indexOf('/') + 1);
+
+    const {buffer} = req.files.video[0];
+
+    const fileName = `product-video-${uuidv4()}-${Date.now()}.${imageFormat}`;
+
+    const params = {
+      Bucket: awsBuckName,
+      Key: `products/${fileName}`,
+      Body: buffer,
+      ContentType: `image/${imageFormat}`,
+    };
+
+    const command = new PutObjectCommand(params);
+    await s3Client.send(command);
+
+    req.body.video = fileName;
+
+  };
+
+  next();
+});
+
+// @desc user create product
+// @route POST /api/v1/user/product
+// @access
+exports.userCreateProduct = createOne(productModel);
+
+// @desc user get my product
+// @route GET /api/v1/user/product
+// @access
+exports.userGetMyeProductsFilterObj = asyncHandler(async (req, _, next) => {
+  const {id} = req.user;
+  req.filterObj = {
+    owner: id,
+  };
+  next();
+});
+exports.userGetMyeProducts = getAll(productModel);
+
+// @desc user get my product
+// @route PUT /api/v1/user/product/:id
+// @access
+exports.userUpdateMyProduct = asyncHandler(async (req,res, next) => {
+
+  const { id } = req.params;
+  const {body} = req;
+
+  if (body.primaryImage || body.images || body.video) {
+
+    let product = await productModel.findByIdAndUpdate(
+      id,
+      body,
+    );
+
+    if (!product) {
+      const message = `No product for this ID ${id}.`;
+      throw next(
+        new ApiError(message, errorObject(id, message, undefined, undefined), 404)
+      );
+    };
+
+    // eslint-disable-next-line prefer-const
+    let allUrlsImages = [];
+    if (body.primaryImage) {
+      allUrlsImages.push(product.primaryImage);
+    };
+    if (body.video) {
+      allUrlsImages.push(product.video);
+    };    
+    if (body.images) {
+      allUrlsImages.push(...product.images);
+    };
+  
+    const keys = allUrlsImages.map((item) => {
+      const imageUrl = `${item}`;
+      const baseUrl = `${process.env.AWS_BASE_URL}/`;
+      const restOfUrl = imageUrl.replace(baseUrl, '');
+      const key = restOfUrl.slice(0, restOfUrl.indexOf('?'));
+      return key;
+    });
+
+    await Promise.all(
+  
+      keys.map(async (key) => {
+  
+        const params = {
+          Bucket: awsBuckName,
+          Key: key,
+        };
+  
+        const command = new DeleteObjectCommand(params);
+        await s3Client.send(command);
+  
+      })
+  
+    );
+
+    product = await productModel.find({ _id: id });
+
+    res.status(200).json({ data: product[0] });
+
+  } else {
+
+    const product = await productModel.findByIdAndUpdate(
+      id,
+      body,
+      { new: true }
+    );
+
+    if (!product) {
+      const message = `No product for this ID ${id}.`;
+      throw next(
+        new ApiError(message, errorObject(id, message, undefined, undefined), 404)
+      );
+    };
+  
+    res.status(200).json({ data: product });
+
+  }
+
+});
+
+// @desc user delete my product
+// @route DELETE /api/v1/user/product
+// @access
+exports.userDeleteMyeProduct = asyncHandler(async (req, res, next) => {
+  const productId = req.params.id;
+  const userId = req.user.id;
+
+  const product = await productModel.findOneAndDelete({
+    _id: productId,
+    owner: userId,
+  });
+
+  if (!product) {
+    const message = `No product for this ID ${productId}.`;
+    throw next(
+      new ApiError(message, errorObject(undefined, message, undefined, undefined), 404)
+    );
+  };
+
+  // eslint-disable-next-line prefer-const
+  let allUrlsImages = [];
+  if (product.images) {
+    allUrlsImages.push(...product.images);
+  };
+  if (product.primaryImage) {
+    allUrlsImages.push(product.primaryImage);
+  };
+  if (product.video) {
+    allUrlsImages.push(product.video);
+  };
+
+  const keys = allUrlsImages.map((item) => {
+    const imageUrl = `${item}`;
+    const baseUrl = `${process.env.AWS_BASE_URL}/`;
+    const restOfUrl = imageUrl.replace(baseUrl, '');
+    const key = restOfUrl.slice(0, restOfUrl.indexOf('?'));
+    return key;
+  });
+
+  await Promise.all(
+
+    keys.map(async (key) => {
+
+      const params = {
+        Bucket: awsBuckName,
+        Key: key,
+      };
+
+      const command = new DeleteObjectCommand(params);
+      await s3Client.send(command);
+
+    })
+
+  );
+
+  res.status(200).json({ data: product });
 
 });

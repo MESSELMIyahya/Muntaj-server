@@ -2,21 +2,38 @@ const express = require(`express`);
 
 const {
   userUpdateMyDataValidator,
+
   userCreateStoreMiddlewareValidator,
   userCreateStoreValidator,
   userUpdateStoreValidator,
+
+  userCreateProductMiddlewareValidator,
+  userCreateProductValidator,
+  userCreateProductImageValidator,
+  userUpdateProductMiddlewareValidator,
+  userUpdateProductValidator,
+  validateIDParams
 } = require("../utils/validators/userValidator");
 const {
-  uploadImage,
-  resizeImage,
+  uploadUserImage,
+  resizeUserImage,
   userGetMyData,
   userUpdateMyData,
-  uploadImages,
-  resizImages,
+
+  uploadStoreImages,
+  resizStoreImages,
   userCreateStore,
   userGetMyeStore,
   userUpdateMyeStore,
-  userDeleteMyeStore
+  userDeleteMyeStore,
+
+  uploadProductImagesAndVideo,
+  resizeProductImagesAndVideo,
+  userCreateProduct,
+  userGetMyeProductsFilterObj,
+  userGetMyeProducts,
+  userUpdateMyProduct,
+  userDeleteMyeProduct
 } = require("../services/userService");
 
 const authVerifierMiddleware = require('../middlewares/auth/index');
@@ -32,9 +49,9 @@ router.route("/me")
     userGetMyData,
   )
   .put(
-    uploadImage,
+    uploadUserImage,
     userUpdateMyDataValidator,
-    resizeImage,
+    resizeUserImage,
     userUpdateMyData,
   );
 
@@ -43,20 +60,48 @@ router.route("/store")
     userGetMyeStore
   )
   .post(
-    uploadImages,
+    uploadStoreImages,
     userCreateStoreMiddlewareValidator,
     userCreateStoreValidator,
-    resizImages,
+    resizStoreImages,
     userCreateStore
   )
   .put(
-    uploadImages,
+    uploadStoreImages,
     userUpdateStoreValidator,
-    resizImages,
+    resizStoreImages,
     userUpdateMyeStore,
   )
   .delete(
     userDeleteMyeStore
+  );
+
+router.route("/product")
+  .get(
+    userGetMyeProductsFilterObj,
+    userGetMyeProducts
   )
+  .post(
+    uploadProductImagesAndVideo,
+    userCreateProductMiddlewareValidator,
+    userCreateProductValidator,
+    resizeProductImagesAndVideo,
+    userCreateProductImageValidator,    
+    userCreateProduct
+  )
+
+router.route("/product/:id")
+  .put(
+    uploadProductImagesAndVideo,
+    validateIDParams,
+    userUpdateProductMiddlewareValidator,
+    userUpdateProductValidator,
+    resizeProductImagesAndVideo,
+    userUpdateMyProduct
+  )
+  .delete(
+    validateIDParams,
+    userDeleteMyeProduct
+  );
 
 module.exports = router;
