@@ -139,7 +139,13 @@ exports.userCreateStoreValidator = [
     .isArray()
     .withMessage("phone numbers must be of type array."),
 
-    check("contact.email")
+  check("contact.phoneNumbers.*")
+    .isString()
+    .withMessage("Phone number must be of type string.")
+    .isMobilePhone()
+    .withMessage("Invalid phone number."),
+
+  check("contact.email")
     .notEmpty()
     .withMessage("Enail is required.")
     .isEmail()
@@ -238,6 +244,13 @@ exports.userUpdateStoreValidator = [
     .optional()
     .isArray()
     .withMessage("phone numbers must be of type array."),
+
+  check("contact.phoneNumbers.*")
+    .optional()
+    .isString()
+    .withMessage("Phone number must be of type string.")
+    .isMobilePhone()
+    .withMessage("Invalid phone number."),
 
     check("contact.email")
     .optional()
