@@ -100,7 +100,7 @@ const storeSchema = new mongoose.Schema(
 );
 
 // mongoose query middleware
-storeSchema.pre('findOne', function(next) {
+storeSchema.pre(/find/, function(next) {
   this.populate({
     path: "owner",
     select: "userName profileImage",

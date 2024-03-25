@@ -36,6 +36,14 @@ const productSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    country: {
+      type: String,
+      required: [true, "Country is required."],
+      trim: true,
+      lowercase: true,
+      minlength: [2, "Country must be at least 2 characters."],
+      maxlength: [16, "Country cannot exceed 16 characters."],
+    },
     category: {
       type: mongoose.Schema.ObjectId,
       ref: "Category",
@@ -92,15 +100,15 @@ const productSchema = new mongoose.Schema(
 );
 
 // mongoose query middleware
-productSchema.pre('findOne', function(next) {
+productSchema.pre(/find/, function(next) {
   this.populate({
     path: "owner",
     select: "userName profileImage"
   })
   .populate({
     path: "store",
-    select: "name rating location contact.email contact.phoneNumbers"
-  })
+    select: "name storeImage rating location"
+  }) 
   next();
 });
 

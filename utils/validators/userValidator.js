@@ -314,6 +314,7 @@ exports.userCreateProductMiddlewareValidator = asyncHandler(
   
     req.body.owner = id;
     req.body.store = store._id;
+    req.body.country = store.location.country;
   
     if (req.files.primaryImage) {
       if (!`${req.files.primaryImage[0].mimetype}`.startsWith('image')) {
@@ -409,6 +410,11 @@ exports.userCreateProductValidator = [
       throw new Error(`No category for this id ${id}.`);
     }),
 
+  check("colors")
+    .optional()
+    .isArray()
+    .withMessage("Colors must be of type array."),
+
   check('colors.*')
     .trim()
     .isString()
@@ -419,24 +425,28 @@ exports.userCreateProductValidator = [
     .withMessage('Product color cannot exceed 16 characters.'),
 
   check('sizes.sm')
+    .optional()
     .trim()
     .isString().withMessage('Small size must be a string.')
     .isLength({ min: 2 }).withMessage('Small size must be at least 2 characters.')
     .isLength({ max: 16 }).withMessage('Small size cannot exceed 16 characters.'),
 
   check('sizes.md')
+    .optional()
     .trim()
     .isString().withMessage('Medium size must be a string.')
     .isLength({ min: 2 }).withMessage('Medium size must be at least 2 characters.')
     .isLength({ max: 16 }).withMessage('Medium size cannot exceed 16 characters.'),
 
   check('sizes.lg')
+    .optional()
     .trim()
     .isString().withMessage('Large size must be a string.')
     .isLength({ min: 2 }).withMessage('Large size must be at least 2 characters.')
     .isLength({ max: 16 }).withMessage('Large size cannot exceed 16 characters.'),
 
   check('sizes.xl')
+    .optional()
     .trim()
     .isString().withMessage('Extra Large size must be a string.')
     .isLength({ min: 2 }).withMessage('Extra Large size must be at least 2 characters.')
@@ -549,6 +559,16 @@ exports.userUpdateProductValidator = [
       return true;
     }),
 
+  check("country")
+    .optional()
+    .isString()
+    .withMessage("Country must be of type string.")
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage("Country must be at least 2 characters.")
+    .isLength({ max: 16 })
+    .withMessage("Country cannot exceed 16 characters."),
+
   check("category")
     .optional()
     .isMongoId()
@@ -561,6 +581,11 @@ exports.userUpdateProductValidator = [
       } 
       throw new Error(`No category for this id ${id}.`);
     }),
+
+  check("colors")
+    .optional()
+    .isArray()
+    .withMessage("Colors must be of type array."),
 
   check('colors.*')
     .trim()
