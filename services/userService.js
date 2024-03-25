@@ -12,6 +12,7 @@ const { uploadSingleImage, uploadMultipleImages } = require("../middlewares/uplo
 const userModel = require("../models/userModel");
 const storeModel = require("../models/storeModel");
 const productModel = require("../models/productModel");
+const reviewModel = require("../models/reviewModel");
 const ApiError = require("../utils/apiError");
 const errorObject = require("../utils/errorObject");
 
@@ -657,6 +658,8 @@ exports.userDeleteMyeProduct = asyncHandler(async (req, res, next) => {
     })
 
   );
+
+  await reviewModel.deleteMany({ product: productId });
 
   res.status(200).json({ data: product });
 

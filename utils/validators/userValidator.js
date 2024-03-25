@@ -451,6 +451,22 @@ exports.userCreateProductValidator = [
     .isString().withMessage('Extra Large size must be a string.')
     .isLength({ min: 2 }).withMessage('Extra Large size must be at least 2 characters.')
     .isLength({ max: 16 }).withMessage('Extra Large size cannot exceed 16 characters.'),
+  
+  check("ratingsAverage")
+    .optional()
+    .isNumeric()
+    .withMessage("Rating average must be of type number.")
+    .isFloat({ min: 1 })
+    .withMessage("Rating must be above or equal 1.0")
+    .isFloat({ max: 5 })
+    .withMessage("Rating must be below or equal 5.0"),
+
+  check("ratingsQuantity")
+    .optional()
+    .isNumeric()
+    .withMessage("Rating quantity must be of type number.")
+    .isInt({ min: 0, })
+    .withMessage("Rating quantity number cannot be less than 0 and must be a integer number."),
 
   validatorMiddleware,
 ];
@@ -623,6 +639,22 @@ exports.userUpdateProductValidator = [
     .isString().withMessage('Extra Large size must be a string.')
     .isLength({ min: 2 }).withMessage('Extra Large size must be at least 2 characters.')
     .isLength({ max: 16 }).withMessage('Extra Large size cannot exceed 16 characters.'),
+
+  check("ratingsAverage")
+    .optional()
+    .isNumeric()
+    .withMessage("Rating average must be of type number.")
+    .isFloat({ min: 1 })
+    .withMessage("Rating must be above or equal 1.0")
+    .isFloat({ max: 5 })
+    .withMessage("Rating must be below or equal 5.0"),
+
+  check("ratingsQuantity")
+    .optional()
+    .isNumeric()
+    .withMessage("Rating quantity must be of type number.")
+    .isInt({ min: 0, })
+    .withMessage("Rating quantity number cannot be less than 0 and must be a integer number."),
 
   validatorMiddleware,
 ];

@@ -94,7 +94,17 @@ const productSchema = new mongoose.Schema(
         minlength: [2, "Extra Large size must be at least 2 characters."],
         maxlength: [16, "Extra Large size cannot exceed 16 characters."],
       },
-    }
+    },
+    ratingsAverage: {
+      type: Number,
+      min: [1, "Rating must be abave or equal 1.0"],
+      max: [5, "Rating must be below or equal 5.0"],
+    },
+    ratingsQuantity: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   { timestamps: true }
 );
@@ -108,7 +118,7 @@ productSchema.pre(/find/, function(next) {
   .populate({
     path: "store",
     select: "name storeImage rating location"
-  }) 
+  });
   next();
 });
 
