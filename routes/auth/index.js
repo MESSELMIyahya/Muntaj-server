@@ -3,6 +3,7 @@ const AuthRegisterController = require("../../controllers/auth/register/index");
 const AuthLoginController = require("../../controllers/auth/login/index");
 const OAuthRouter = require("./passport/index");
 const AuthLogoutController = require("../../controllers/auth/logout/index");
+const AuthUpdateUserController = require("../../controllers/auth/update/index");
 const AuthIsAuthenticatedController = require("../../controllers/auth/IsAuthenticated/index");
 const AuthVerifierMiddleware = require('../../middlewares/auth/index');
 
@@ -13,6 +14,9 @@ app.get("/is-authenticated",AuthVerifierMiddleware, AuthIsAuthenticatedControlle
 
 // register route
 app.post("/register", AuthRegisterController);
+
+// update user route
+app.put('/update',AuthVerifierMiddleware,AuthUpdateUserController)
 
 // login route
 app.post("/login", AuthLoginController);
