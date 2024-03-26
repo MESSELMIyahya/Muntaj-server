@@ -95,6 +95,14 @@ exports.userCreateStoreValidator = [
       }
     }),
 
+  check('description')
+    .optional()
+    .isString()
+    .withMessage('Store description must be a string.')
+    .trim()
+    .isLength({ min: 20 })
+    .withMessage('Store description must be at least 20 characters.'),
+
   check("storeImage")
     .custom((_, { req }) => {
       if (!(req.body.storeImage === undefined)) {
@@ -203,6 +211,14 @@ exports.userUpdateStoreValidator = [
         throw new Error("This store name already used.");
       }
     }),
+
+  check('description')
+    .optional()
+    .isString()
+    .withMessage('Store description must be a string.')
+    .trim()
+    .isLength({ min: 20 })
+    .withMessage('Store description must be at least 20 characters.'),
 
   check("storeImage")
     .custom((_, { req }) => {

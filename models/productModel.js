@@ -117,7 +117,7 @@ productSchema.pre(/find/, function(next) {
   })
   .populate({
     path: "store",
-    select: "name storeImage rating location"
+    select: "name storeImage rating location contact"
   });
   next();
 });

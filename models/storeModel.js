@@ -16,6 +16,11 @@ const storeSchema = new mongoose.Schema(
       minlength: [2, "Store name must be at least 2 characters."],
       maxlength: [16, "Store name cannot exceed 16 characters."],
     },
+    description: {
+      type: String,
+      trim: true,
+      minlength: [20, "store description must be at least 20 characters."],
+    },
     storeImage: {
       type: String,
       trim: true,
@@ -23,12 +28,6 @@ const storeSchema = new mongoose.Schema(
     storeCoverImage: {
       type: String,
       trim: true,
-    },
-    rating: {
-      type: Number,
-      min: [0, "Rating must be abave or equal 0.0"],
-      max: [5, "Rating must be below or equal 5.0"],
-      default: 0,
     },
     location: {
       country: {
