@@ -1,4 +1,5 @@
 const UserModel = require('../../../models/userModel');
+const storeModel = require('../../../models/storeModel');
 const { z } = require('zod');
 const { generateAccessToken, generateRefreshToken } = require('../../../utils/auth/jwt/index');
 const ApiError = require('../../../utils/apiError');
@@ -67,12 +68,23 @@ const AuthLoginController = async(req,res,next) => {
             ))
         }
 
+        // See if the user has a store
+
+        const store = await storeModel.findOne({
+            owner: user._id,
+        });
+
         const JWTBody = {
             email:user.email,
             id:user._id,
             role:user.role,
             username:user.userName,
-            pic:user.profileImage || ''
+            pic:user.profileImage || '',
+            store: store ? {
+                id:store._id,
+                image:store.storeImage,
+                name:store.name,
+            } : null
         }
 
         // jwt auth 

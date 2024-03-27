@@ -4,6 +4,7 @@ const ApiError = require('../../../utils/apiError');
 const errorObject = require('../../../utils/errorObject');
 const ms = require('ms');
 const UserModel = require('../../../models/userModel');
+const storeModel = require('../../../models/storeModel');
 
 // new access token function
 const AuthUpdateUserController = async (req, res, next) => {
@@ -24,6 +25,12 @@ const AuthUpdateUserController = async (req, res, next) => {
                 401
             ))
         }
+
+        // See if the user has a store
+
+        const store = await storeModel.findOne({
+            owner: user._id,
+        });
         
         // if the token isn't valid  it'll throw an error "JWT-EXPIRED"
         // body data
@@ -32,7 +39,12 @@ const AuthUpdateUserController = async (req, res, next) => {
             id:user._id,
             role:user.role,
             username:user.userName,
-            pic:user.profileImage || ''
+            pic:user.profileImage || '',
+            store: store ? {
+                id: store._id,
+                image: store.storeImage,
+                name: store.name,
+            } : null
         }
 
         // jwt auth 

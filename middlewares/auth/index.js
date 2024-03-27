@@ -37,7 +37,8 @@ const AuthVerifierMiddleware = async (req, res, next) => {
                     id: refreshPayload.id,
                     role: refreshPayload.role,
                     username: refreshPayload.username,
-                    pic: refreshPayload.pic
+                    pic: refreshPayload.pic,
+                    store: refreshPayload.store ? refreshPayload.store : null
                 }
 
                 const new_access_token = generateAccessToken(JWTBody);
