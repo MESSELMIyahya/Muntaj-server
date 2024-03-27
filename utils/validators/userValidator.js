@@ -3,7 +3,6 @@ const { check } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 
 const storeModel = require("../../models/storeModel");
-const categoryModel = require("../../models/categoryModel");
 const productModel = require("../../models/productModel");
 const ApiError = require("../apiError");
 const errorObject = require('../errorObject');
@@ -414,17 +413,14 @@ exports.userCreateProductValidator = [
 
   check("category")
     .notEmpty()
-    .withMessage("Product must be belong to a category.")
-    .isMongoId()
-    .withMessage("Invalid category id format.")
-    .custom(async (_, { req }) => {
-      const id = req.body.category;
-      const category = await categoryModel.findById(id);
-      if (category) {
-        return true;
-      } 
-      throw new Error(`No category for this id ${id}.`);
-    }),
+    .withMessage('Category is required.')
+    .isString()
+    .withMessage("category must be of type string.")
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage("category must be at least 2 characters.")
+    .isLength({ max: 16 })
+    .withMessage("category cannot exceed 16 characters."),
 
   check("colors")
     .optional()
@@ -603,16 +599,13 @@ exports.userUpdateProductValidator = [
 
   check("category")
     .optional()
-    .isMongoId()
-    .withMessage("Invalid category id format.")
-    .custom(async (_, { req }) => {
-      const id = req.body.category;
-      const category = await categoryModel.findById(id);
-      if (category) {
-        return true;
-      } 
-      throw new Error(`No category for this id ${id}.`);
-    }),
+    .isString()
+    .withMessage("Category must be of type string.")
+    .trim()
+    .isLength({ min: 2 })
+    .withMessage("Category must be at least 2 characters.")
+    .isLength({ max: 16 })
+    .withMessage("Category cannot exceed 16 characters."),
 
   check("colors")
     .optional()

@@ -45,9 +45,11 @@ const productSchema = new mongoose.Schema(
       maxlength: [16, "Country cannot exceed 16 characters."],
     },
     category: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Category",
-      required: [true, "Product must belong to category."],
+      type: String,
+      required: [true, "Category name is required."],
+      trim: true,
+      minlength: [2, "Category name must be at least 2 characters."],
+      maxlength: [16, "Category name cannot exceed 16 characters."],
     },
     store: {
       type: mongoose.Schema.ObjectId,
