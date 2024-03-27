@@ -1,5 +1,4 @@
 const { check } = require('express-validator');
-const slugify = require("slugify");
 
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const categoryModel = require("../../models/categoryModel");
@@ -13,23 +12,7 @@ exports.createCategoryValidator = [
     .isLength({ min: 2 })
     .withMessage("Category name must be at least 2 characters.")
     .isLength({ max: 32 })
-    .withMessage("Category name cannot exceed 32 characters.")
-    .custom(async (value, { req }) => {
-      req.body.slug = slugify(value);
-      const category = await categoryModel.findOne({ name: value });
-      if (category) {
-        throw new Error(`This name already used.`);
-      };
-      return true;
-    }),
-
-  check("image")
-    .custom((_, { req }) => {
-      if (!(req.body.image === undefined)) {
-        throw new Error('The field you entered for Image is not an Image type.');
-      };
-      return true;
-    }),
+    .withMessage("Category name cannot exceed 32 characters."),
 
   validatorMiddleware,
 ];
@@ -61,23 +44,7 @@ exports.updateCategoryValidator = [
     .isLength({ min: 2 })
     .withMessage("Category name must be at least 2 characters.")
     .isLength({ max: 32 })
-    .withMessage("Category name cannot exceed 32 characters.")
-    .custom(async (value, { req }) => {
-      req.body.slug = slugify(value);
-      const category = await categoryModel.findOne({ name: value });
-      if (category) {
-        throw new Error(`This name already used.`);
-      };
-      return true;
-    }),
-
-  check("image")
-    .custom((_, { req }) => {
-      if (!(req.body.image === undefined)) {
-        throw new Error('The field you entered for Image is not an Image type.');
-      };
-      return true;
-    }),
+    .withMessage("Category name cannot exceed 32 characters."),
 
   validatorMiddleware,
 ];
@@ -86,14 +53,6 @@ exports.deleteCategoryValidator = [
   check("id")
   .isMongoId()
   .withMessage("Invalid category ID format."),
-
-  validatorMiddleware,
-];
-
-exports.imageValidator = [
-  check("image")
-    .notEmpty()
-    .withMessage("Category image is required."),
 
   validatorMiddleware,
 ];
