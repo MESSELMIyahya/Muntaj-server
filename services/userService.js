@@ -364,6 +364,8 @@ exports.userDeleteMyeStore = asyncHandler(async (req, res, next) => {
 
   };
 
+  await productModel.deleteMany({ store: document._id });
+
   res.status(200).json({ data: document });
 
 });
@@ -402,7 +404,6 @@ exports.resizeProductImagesAndVideo = asyncHandler(async (req, res, next) => {
     const imageFormat = 'jpg';
 
     const buffer = await sharp(req.files.primaryImage[0].buffer)
-    .resize(960, 1312)
     .toFormat(imageFormat)
     .jpeg({ quality: 100 })
     .toBuffer();
@@ -441,10 +442,9 @@ exports.resizeProductImagesAndVideo = asyncHandler(async (req, res, next) => {
 
       req.files.images.map(async (img, index) => {
 
-        const imageFormat = 'jpeg';
+        const imageFormat = 'jpg';
 
         const buffer = await sharp(img.buffer)
-        .resize(960, 1312)
         .toFormat(imageFormat)
         .jpeg({ quality: 100 })
         .toBuffer();
