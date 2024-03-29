@@ -4,7 +4,10 @@ const morgan = require("morgan");
 const cookieParser = require('cookie-parser');
 const cors = require('cors'); 
 
-dotenv.config({ path: "./config.env" });
+// dotenv.config({ path: "./config.env" });
+// env for prod 
+dotenv.config();
+
 const ApiError = require("./utils/apiError");
 const errorObject = require("./utils/errorObject");
 const globalErrore = require("./middlewares/erroreMiddleware");
