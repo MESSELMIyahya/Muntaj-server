@@ -24,7 +24,7 @@ dbConection();
 const app = express();
 
 // setup cors and cookie parser 
-app.use(cors({credentials:true,allowedHeaders:true, origin:['https://muntaj.vercel.app'], methods:["POST","DELETE","GET","PUT"]}));
+app.use(cors({credentials:true,origin:'https://muntaj.vercel.app'}));
 app.use(cookieParser());
 
 // middlewares
