@@ -63,7 +63,7 @@ const OAuthGoogleLoginController = async (req, res, next) => {
         const re_to_age = ms(process.env.REFRESH_TOKEN_EXPiRES || '60m')
 
         // saving Access Token and Refresh Token as HTTPOnly cookie
-        res.cookie('ac_to', accessToken, {  secure:true,httpOnly: true, maxAge: ac_to_age });
+        res.cookie('ac_to', accessToken,  { secure:true,httpOnly: true, maxAge: ac_to_age });
         res.cookie('re_to', refreshToken, { secure:true,httpOnly: true, maxAge: re_to_age });
 
         // send tokens 
