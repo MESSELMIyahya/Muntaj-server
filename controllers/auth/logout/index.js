@@ -18,8 +18,8 @@ const AuthLogoutController =  async(req,res,next) => {
         ))
     }
     // deleting cookies 
-    res.clearCookie('ac_to',{httpOnly:true});
-    res.clearCookie('re_to',{httpOnly:true});
+    res.clearCookie('ac_to',{httpOnly:true,sameSite:'none', secure:true,});
+    res.clearCookie('re_to',{httpOnly:true,sameSite:'none', secure:true,});
     return res.json({Unauthenticated:true});
 }
 
