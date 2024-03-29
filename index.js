@@ -71,3 +71,7 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
+
+
+// add export for vercel
+module.exports = app;
