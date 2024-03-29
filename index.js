@@ -32,6 +32,9 @@ if (process.env.NODE_ENV === `development`) {
   console.log(`mode: ${process.env.NODE_ENV}`);
 };
 
+// add hello route for prod testing
+app.get('/',(req,res)=>res.send('Hello From Muntaj'))
+
 // Mount Routes
 mountRoutes(app);
 
