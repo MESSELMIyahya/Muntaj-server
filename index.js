@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === `development`) {
 };
 
 // add hello route for prod testing
-app.get('/',(req,res)=>res.send('Hello From Muntaj'))
+app.get('/',(req,res)=>{res.send('Hello From Muntaj')})
 
 // Mount Routes
 mountRoutes(app);
