@@ -96,8 +96,8 @@ const AuthLoginController = async(req,res,next) => {
         const re_to_age = ms(process.env.REFRESH_TOKEN_EXPiRES || '60m')
 
         // saving Access Token and Refresh Token as HTTPOnly cookie
-        res.cookie('ac_to',accessToken,{httpOnly:true ,secure:true,maxAge:ac_to_age});
-        res.cookie('re_to',refreshToken,{httpOnly:true,secure:true,maxAge:re_to_age});
+        res.cookie('ac_to',accessToken,{httpOnly:true , sameSite:'none', secure:true,maxAge:ac_to_age});
+        res.cookie('re_to',refreshToken,{httpOnly:true, sameSite:'none', secure:true,maxAge:re_to_age});
 
         // send tokens 
         return res.json({id:user._id,tokens:{acc:accessToken,ref:refreshToken}});
