@@ -401,7 +401,9 @@ exports.resizeProductImagesAndVideo = asyncHandler(async (req, res, next) => {
       );
     };
 
-    const imageFormat = 'jpg';
+    const {mimetype} = req.files.primaryImage[0];
+
+    const imageFormat = `${mimetype}`.slice(`${mimetype}`.indexOf('/') + 1);
 
     const buffer = await sharp(req.files.primaryImage[0].buffer)
     .toFormat(imageFormat)
@@ -442,7 +444,9 @@ exports.resizeProductImagesAndVideo = asyncHandler(async (req, res, next) => {
 
       req.files.images.map(async (img, index) => {
 
-        const imageFormat = 'jpg';
+        const {mimetype} = req.files.images[index];
+
+        const imageFormat = `${mimetype}`.slice(`${mimetype}`.indexOf('/') + 1);
 
         const buffer = await sharp(img.buffer)
         .toFormat(imageFormat)
