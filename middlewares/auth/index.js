@@ -46,7 +46,7 @@ const AuthVerifierMiddleware = async (req, res, next) => {
                 const ac_to_age = ms(process.env.REFRESH_TOKEN_EXPiRES || '60m');
 
                 // saving Access Token and Refresh Token as HTTPOnly cookie
-                res.cookie('ac_to', new_access_token, { httpOnly: true, maxAge: ac_to_age });
+                res.cookie('ac_to', new_access_token, { httpOnly: true,sameSite:'none', secure:true, maxAge: ac_to_age });
 
                 // setting the user data
                 payload = refreshPayload ;

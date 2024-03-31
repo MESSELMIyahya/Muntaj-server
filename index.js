@@ -4,7 +4,10 @@ const morgan = require("morgan");
 const cookieParser = require('cookie-parser');
 const cors = require('cors'); 
 
-dotenv.config({ path: "./config.env" });
+// dotenv.config({ path: "./config.env" });
+// env for prod 
+dotenv.config();
+
 const ApiError = require("./utils/apiError");
 const errorObject = require("./utils/errorObject");
 const globalErrore = require("./middlewares/erroreMiddleware");
@@ -21,7 +24,7 @@ dbConection();
 const app = express();
 
 // setup cors and cookie parser 
-app.use(cors({credentials:true, origin: true, methods:["POST","DELETE","GET","PUT"]}));
+app.use(cors({credentials:true,origin:'https://muntaj.vercel.app'}));
 app.use(cookieParser());
 
 // middlewares
@@ -31,6 +34,9 @@ if (process.env.NODE_ENV === `development`) {
   app.use(morgan("tiny"));
   console.log(`mode: ${process.env.NODE_ENV}`);
 };
+
+// add hello route for prod testing
+app.get('/',(req,res)=>{res.send('Hello From Muntaj')})
 
 // Mount Routes
 mountRoutes(app);
@@ -68,3 +74,4 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
+
